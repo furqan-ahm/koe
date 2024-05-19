@@ -1,6 +1,7 @@
+import 'package:get/get.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-class YTService {
+class YTService extends GetxService{
   YTService._();
   final YTService _instance = YTService._();
   YTService get instance => _instance;

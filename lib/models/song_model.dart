@@ -1,9 +1,19 @@
 import 'package:get/get.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-class Song extends GetxController{
+class SongModel extends GetxController {
+  static final Map<String, WeakReference<SongModel>> _songsDynamicCache = {};
 
-  
+  static SongModel cacheSong(SongModel song) {
+    SongModel? cachedSong = _songsDynamicCache[song.videoId]?.target;
+    if (cachedSong != null) {
+      // cachedSong.updateModal(song);
+      return cachedSong;
+    } else {
+      _songsDynamicCache[song.videoId] = WeakReference(song);
+      return song;
+    }
+  }
 
   String title;
   String videoId;
@@ -18,7 +28,7 @@ class Song extends GetxController{
 
   bool get isOffline => path != null;
 
-  Song({
+  SongModel({
     required this.videoId,
     required this.url,
     required this.title,
@@ -29,15 +39,15 @@ class Song extends GetxController{
     this.offlineThumbnail,
   });
 
-  static Song fromVideo(Video vid) {
-    return Song(
+  static SongModel fromVideo(Video vid) {
+    return cacheSong(SongModel(
       title: vid.title,
       videoId: vid.id.toString(),
       url: vid.url,
       thumbnailMed: vid.thumbnails.mediumResUrl,
       thumbnailMax: vid.thumbnails.highResUrl,
       duration: vid.duration,
-    );
+    ));
   }
 
   String get length {
@@ -56,8 +66,8 @@ class Song extends GetxController{
     return result;
   }
 
-  static Song fromMap(Map data) {
-    return Song(
+  static SongModel fromMap(Map data) {
+    return cacheSong(SongModel(
         videoId: data['id'],
         path: data['path'],
         url: data['url'],
@@ -67,7 +77,7 @@ class Song extends GetxController{
         offlineThumbnail: data['offlineThumbnail'],
         duration: Duration(
           milliseconds: data['duration'],
-        ));
+        )));
   }
 
   toMap() {
@@ -78,9 +88,14 @@ class Song extends GetxController{
       'title': title,
       'thumbnailMed': thumbnailMed,
       'thumbnailMax': thumbnailMax,
-      'offlineThumbnail':offlineThumbnail,
+      'offlineThumbnail': offlineThumbnail,
       'duration': duration!.inMilliseconds
     };
   }
 
+
+
+
+
+  
 }
